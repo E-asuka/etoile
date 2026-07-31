@@ -22,7 +22,7 @@ const snsLinks = [
           class="h-14 w-auto md:h-16"
         />
       </a>
-      <nav class="flex flex-wrap justify-center gap-6">
+      <nav class="grid grid-cols-3 gap-x-5 gap-y-3 justify-items-center md:flex md:flex-wrap md:justify-center md:gap-6">
         {NAV_ITEMS.map((item) => (
           <a href={item.href} class="text-xs tracking-wide text-gray-300 hover:text-white transition-colors">
             {item.label}
