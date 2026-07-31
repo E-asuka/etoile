@@ -1,0 +1,103 @@
+---
+import logoColor from '../assets/logo-color.png';
+import { NAV_ITEMS } from '../lib/nav';
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-20 md:h-24">
+    <a href="/" class="flex items-center shrink-0">
+      <img
+        src={logoColor.src}
+        alt="étoile NAIL SALON"
+        width={logoColor.width}
+        height={logoColor.height}
+        class="h-16 w-auto md:h-20"
+      />
+    </a>
+
+    <nav class="hidden md:flex items-center gap-7">
+      {NAV_ITEMS.map((item) => (
+        <a href={item.href} class="text-base tracking-wider text-text hover:text-primary transition-colors">
+          {item.label}
+        </a>
+      ))}
+      <a
+        href="/reservation"
+        class="bg-primary text-white text-base px-6 py-2.5 rounded hover:bg-primary-dark transition-colors tracking-wider"
+      >
+        RESERVE
+      </a>
+    </nav>
+
+    <button
+      type="button"
+      id="menu-toggle"
+      class="md:hidden inline-flex flex-col justify-center items-center gap-1.5 w-11 h-11 rounded border border-transparent hover:border-primary/30 transition-colors"
+      aria-label="メニューを開く"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="menu-bar block w-6 h-0.5 bg-text transition-transform duration-200 origin-center"></span>
+      <span class="menu-bar block w-6 h-0.5 bg-text transition-opacity duration-200"></span>
+      <span class="menu-bar block w-6 h-0.5 bg-text transition-transform duration-200 origin-center"></span>
+    </button>
+  </div>
+
+  <div
+    id="mobile-menu"
+    class="md:hidden grid grid-rows-[0fr] opacity-0 pointer-events-none transition-[grid-template-rows,opacity] duration-300 ease-out border-t border-transparent bg-white/95 backdrop-blur-sm"
+  >
+    <div class="overflow-hidden min-h-0">
+      <nav class="max-w-6xl mx-auto px-4 py-5 flex flex-col gap-1">
+        {NAV_ITEMS.map((item) => (
+          <a
+            href={item.href}
+            class="mobile-nav-link block px-3 py-3 text-base tracking-wider text-text hover:text-primary hover:bg-bg-section rounded transition-colors"
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href="/reservation"
+          class="mobile-nav-link mt-2 block text-center bg-primary text-white text-base px-6 py-3 rounded hover:bg-primary-dark transition-colors tracking-wider"
+        >
+          RESERVE
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    const bars = toggle.querySelectorAll('.menu-bar');
+
+    const setOpen = (open) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+      if (open) {
+        menu.classList.remove('grid-rows-[0fr]', 'opacity-0', 'pointer-events-none', 'border-transparent');
+        menu.classList.add('grid-rows-[1fr]', 'opacity-100', 'border-gray-100');
+        bars[0]?.classList.add('translate-y-2', 'rotate-45');
+        bars[1]?.classList.add('opacity-0');
+        bars[2]?.classList.add('-translate-y-2', '-rotate-45');
+      } else {
+        menu.classList.add('grid-rows-[0fr]', 'opacity-0', 'pointer-events-none', 'border-transparent');
+        menu.classList.remove('grid-rows-[1fr]', 'opacity-100', 'border-gray-100');
+        bars[0]?.classList.remove('translate-y-2', 'rotate-45');
+        bars[1]?.classList.remove('opacity-0');
+        bars[2]?.classList.remove('-translate-y-2', '-rotate-45');
+      }
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    menu.querySelectorAll('.mobile-nav-link').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+  }
+</script>

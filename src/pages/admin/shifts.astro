@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ShiftForm from '../../components/ShiftForm';
+import { STAFF, WORK_BLOCKS, CLOSED_DAYS } from '../../lib/salon';
+import { getStaffImageSrcMap } from '../../lib/staffAssets';
+---
+
+<Layout title="シフト提出 | étoile Nail Salon">
+  <Header slot="header" />
+
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-4xl mx-auto reveal">
+      <h1 class="text-3xl font-display tracking-wider text-center mb-2">SHIFT</h1>
+      <p class="text-sm text-text-light text-center mb-4">スタッフシフト提出</p>
+      <p class="text-xs text-text-light text-center mb-12 max-w-lg mx-auto">
+        提出した出勤枠のみ、お客様の予約画面に空きとして表示されます。<br />
+        シフト未提出の日・時間帯は予約不可（×）になります。
+      </p>
+      <div class="bg-white rounded-xl shadow-sm p-8">
+        <ShiftForm
+          client:only="react"
+          staffList={STAFF.map((s) => ({ id: s.id, name: s.name }))}
+          staffImages={getStaffImageSrcMap()}
+          workBlocks={WORK_BLOCKS}
+          closedDays={CLOSED_DAYS}
+        >
+          <p slot="fallback" class="text-center text-sm text-text-light py-10">Loading...</p>
+        </ShiftForm>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Layout>

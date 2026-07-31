@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SALON_ACCESS } from '../lib/salon';
+import shop1 from '../assets/shop1.jpg';
+import shop2 from '../assets/shop2.jpg';
+
+const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(SALON_ACCESS.mapQuery)}&hl=ja&z=16&output=embed`;
+---
+
+<Layout title="アクセス | étoile Nail Salon">
+  <Header slot="header" />
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="reveal text-3xl font-display tracking-wider text-center mb-12">ACCESS</h1>
+
+      <div class="grid md:grid-cols-2 gap-10 md:gap-14 mb-14">
+        <div class="reveal" style="transition-delay: 80ms">
+          <h2 class="text-sm tracking-widest text-text-light mb-4">INFORMATION</h2>
+          <dl class="space-y-5 text-sm">
+            <div>
+              <dt class="text-xs tracking-wider text-primary mb-1">住所</dt>
+              <dd class="leading-relaxed text-text">
+                {SALON_ACCESS.postalCode}<br />
+                {SALON_ACCESS.addressLines[0]}<br />
+                {SALON_ACCESS.addressLines[1]}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs tracking-wider text-primary mb-1">TEL</dt>
+              <dd class="leading-relaxed text-text">
+                <a href={`tel:${SALON_ACCESS.phoneTel}`} class="hover:text-primary transition-colors">
+                  {SALON_ACCESS.phone}
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs tracking-wider text-primary mb-1">営業時間</dt>
+              <dd class="leading-relaxed text-text">{SALON_ACCESS.openHours}</dd>
+            </div>
+            <div>
+              <dt class="text-xs tracking-wider text-primary mb-1">定休日</dt>
+              <dd class="leading-relaxed text-text">{SALON_ACCESS.closedDay}</dd>
+            </div>
+            <div>
+              <dt class="text-xs tracking-wider text-primary mb-1">アクセス</dt>
+              <dd class="leading-relaxed text-text">{SALON_ACCESS.accessNote}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="flex flex-col gap-2 md:gap-3">
+          <figure class="reveal overflow-hidden rounded-lg" style="transition-delay: 140ms">
+            <img
+              src={shop1.src}
+              alt="サロン外観"
+              width={shop1.width}
+              height={shop1.height}
+              class="w-full aspect-[4/3] object-cover object-[center_35%] transition-transform duration-500 ease-out hover:scale-105"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="reveal overflow-hidden rounded-lg" style="transition-delay: 220ms">
+            <img
+              src={shop2.src}
+              alt="サロン内観"
+              width={shop2.width}
+              height={shop2.height}
+              class="w-full aspect-[4/3] object-cover object-center transition-transform duration-500 ease-out hover:scale-105"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay: 120ms">
+        <h2 class="text-sm tracking-widest text-text-light mb-4">MAP</h2>
+        <div class="overflow-hidden rounded-lg border border-accent transition-shadow duration-300 hover:shadow-md">
+          <iframe
+            title="サロン地図"
+            src={mapSrc}
+            class="w-full h-72 md:h-96 border-0"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="mt-3 text-center">
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SALON_ACCESS.mapQuery)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block text-sm text-primary hover:text-primary-dark transition-colors tracking-wide"
+          >
+            Google Mapで開く →
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</Layout>

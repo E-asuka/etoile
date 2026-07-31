@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ReservationForm from '../components/ReservationForm';
+import {
+  MENUS,
+  OPTIONS,
+  STAFF_SELECT_OPTIONS,
+  NO_PREFERENCE,
+  MAX_ADVANCE_MONTHS,
+} from '../lib/salon';
+import { getStaffImageSrcMap } from '../lib/staffAssets';
+---
+
+<Layout title="ご予約 | étoile Nail Salon">
+  <Header slot="header" />
+
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-4xl mx-auto reveal">
+      <h1 class="text-3xl font-display tracking-wider text-center mb-2">RESERVATION</h1>
+      <p class="text-sm text-text-light text-center mb-12">ご予約はこちらから</p>
+
+      <ReservationForm
+        client:only="react"
+        menus={MENUS}
+        options={OPTIONS}
+        staffOptions={STAFF_SELECT_OPTIONS}
+        staffImages={getStaffImageSrcMap()}
+        noPreference={NO_PREFERENCE}
+        maxAdvanceMonths={MAX_ADVANCE_MONTHS}
+      >
+        <div slot="fallback" class="bg-white rounded-xl shadow-sm p-8 text-center text-sm text-text-light py-16">
+          予約フォームを読み込み中...
+        </div>
+      </ReservationForm>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Layout>

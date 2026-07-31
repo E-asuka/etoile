@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getReviews, stars } from '../lib/reviews';
+
+const reviews = getReviews();
+const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+for (const r of reviews) {
+  counts[r.rating as 1 | 2 | 3 | 4 | 5]++;
+}
+
+const filters = [
+  { value: 'all', label: 'すべて', count: reviews.length },
+  { value: '5', label: stars(5), count: counts[5] },
+  { value: '4', label: stars(4), count: counts[4] },
+  { value: '3', label: stars(3), count: counts[3] },
+  { value: '2', label: stars(2), count: counts[2] },
+  { value: '1', label: stars(1), count: counts[1] },
+];
+---
+
+<Layout title="レビュー | étoile Nail Salon">
+  <Header slot="header" />
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-4xl mx-auto reveal">
+      <h1 class="text-3xl font-display tracking-wider text-center mb-4">REVIEW</h1>
+      <p class="text-sm text-text-light text-center mb-10">お客様の声（全{reviews.length}件）</p>
+
+      <div id="review-filters" class="flex flex-wrap justify-center gap-2 mb-10">
+        {filters.map((f) => (
+          <button
+            type="button"
+            data-filter={f.value}
+            disabled={f.count === 0 && f.value !== 'all'}
+            class:list={[
+              'review-filter-btn px-3 py-2 rounded text-xs sm:text-sm border transition-colors disabled:opacity-30 disabled:cursor-not-allowed',
+              f.value === 'all'
+                ? 'is-active border-primary bg-primary/10 text-primary'
+                : 'border-gray-200 text-text-light hover:border-primary/50',
+            ]}
+          >
+            {f.label}
+            <span class="ml-1 text-[10px] opacity-70">({f.count})</span>
+          </button>
+        ))}
+      </div>
+
+      <p id="review-empty" class="hidden text-center text-sm text-text-light py-12">
+        該当するレビューがありません
+      </p>
+
+      <div id="review-list" class="grid md:grid-cols-2 gap-6">
+        {reviews.map((review) => (
+          <div
+            class="review-card bg-white rounded-lg p-6 shadow-sm border border-accent/40"
+            data-rating={review.rating}
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-primary tracking-wider text-sm">{stars(review.rating)}</div>
+              <span class="text-xs text-text-light">{review.date}</span>
+            </div>
+            <p class="text-sm text-text leading-relaxed">{review.comment}</p>
+            <p class="text-xs text-text-light mt-4">
+              {review.author} ／ {review.age} ／ {review.job}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</Layout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.review-filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.review-card');
+  const empty = document.getElementById('review-empty');
+
+  function applyFilter(value: string) {
+    let visible = 0;
+    cards.forEach((card) => {
+      const show = value === 'all' || card.dataset.rating === value;
+      card.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    empty?.classList.toggle('hidden', visible > 0);
+
+    buttons.forEach((btn) => {
+      const active = btn.dataset.filter === value;
+      btn.classList.toggle('is-active', active);
+      btn.classList.toggle('border-primary', active);
+      btn.classList.toggle('bg-primary/10', active);
+      btn.classList.toggle('text-primary', active);
+      btn.classList.toggle('border-gray-200', !active);
+      btn.classList.toggle('text-text-light', !active);
+    });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const value = btn.dataset.filter ?? 'all';
+      applyFilter(value);
+    });
+  });
+</script>

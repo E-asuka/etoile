@@ -1,0 +1,234 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { MENUS, STAFF, SALON_ACCESS } from '../lib/salon';
+import { getStaffImage } from '../lib/staffAssets';
+import { getLatestReviews, stars } from '../lib/reviews';
+import bgPc from '../assets/bg-pc.jpg';
+import bgMobile from '../assets/bg-mobile.jpg';
+import bannerPc from '../assets/banner-pc.jpg';
+import bannerMobile from '../assets/banner-mobile.jpg';
+import interior from '../assets/inetrior.jpg';
+import type { ImageMetadata } from 'astro';
+
+const latestReviews = getLatestReviews(3);
+
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/gallery/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const galleryPreview = Object.entries(galleryModules)
+  .map(([path, mod]) => ({
+    src: mod.default,
+    name: path.split('/').pop() ?? path,
+  }))
+  .sort((a, b) =>
+    b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }),
+  )
+  .slice(0, 8);
+---
+
+<Layout>
+  <Header slot="header" />
+
+  <!-- Hero -->
+  <section class="relative h-screen flex items-center pt-28 md:pt-32 overflow-hidden">
+    <picture>
+      <source media="(min-width: 768px)" srcset={bgPc.src} />
+      <img
+        src={bgMobile.src}
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </picture>
+    <div class="absolute inset-0 bg-bg/55"></div>
+    <div class="relative z-10 w-full max-w-6xl mx-auto px-4 text-center md:text-left reveal">
+      <p class="text-base md:text-lg tracking-wide text-text-light mb-4 md:mb-6">指先から、わたしらしく輝く。</p>
+      <h1 class="font-display text-6xl md:text-8xl leading-[0.9] mb-6 md:mb-8">
+        Shine in<br />your style.
+      </h1>
+      <p class="text-base md:text-lg text-text-light mb-8 tracking-wide md:mb-10">毎日が少し特別になる、<br class="md:hidden" />あなただけのネイルを。</p>
+      <a href="/reservation" class="inline-block bg-primary text-white px-8 py-3.5 md:px-10 md:py-4 rounded hover:bg-primary-dark transition-colors text-sm md:text-base tracking-wide">
+        ご予約はこちら →
+      </a>
+    </div>
+  </section>
+
+  <!-- Campaign -->
+  <section class="py-16 px-4">
+    <div class="max-w-3xl mx-auto overflow-hidden rounded-xl reveal">
+      <a href="/reservation" class="block">
+        <picture>
+          <source media="(min-width: 768px)" srcset={bannerPc.src} />
+          <img
+            src={bannerMobile.src}
+            alt="SUMMER CAMPAIGN"
+            width={bannerMobile.width}
+            height={bannerMobile.height}
+            class="w-full h-auto"
+            loading="lazy"
+          />
+        </picture>
+      </a>
+    </div>
+  </section>
+
+  <!-- Menu -->
+  <section class="py-16 px-4">
+    <div class="max-w-3xl mx-auto text-center reveal">
+      <h2 class="text-2xl font-display tracking-wider mb-10">MENU</h2>
+      <div class="space-y-4 text-left">
+        {MENUS.slice(0, 6).map((item) => (
+          <div class="flex items-center justify-between border-b border-accent pb-3">
+            <div class="flex gap-8">
+              <span class="hidden md:inline text-sm font-medium min-w-24 uppercase tracking-wider text-primary">{item.id}</span>
+              <span class="text-sm text-text-light">{item.label}【約{item.durationMin}分】</span>
+            </div>
+            <span class="text-sm">¥{item.price.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+      <a href="/menu" class="inline-block mt-8 bg-white border border-primary text-primary px-6 py-2.5 rounded text-sm tracking-wide hover:bg-primary hover:text-white transition-colors">メニューを全て見る →</a>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="py-16 px-4 bg-bg-section">
+    <div class="max-w-5xl mx-auto reveal">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-display tracking-wider">GALLERY</h2>
+        <a href="/gallery" class="inline-block bg-white border border-primary text-primary px-5 py-2 rounded text-sm tracking-wide hover:bg-primary hover:text-white transition-colors">View All →</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {galleryPreview.map((img) => (
+          <div class="aspect-square overflow-hidden rounded-lg bg-accent/50">
+            <img
+              src={img.src.src}
+              alt="Nail design"
+              width={img.src.width}
+              height={img.src.height}
+              loading="lazy"
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Staff -->
+  <section class="py-16 px-4">
+    <div class="max-w-4xl mx-auto reveal">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-display tracking-wider">STAFF</h2>
+        <a href="/staff" class="inline-block bg-white border border-primary text-primary px-5 py-2 rounded text-sm tracking-wide hover:bg-primary hover:text-white transition-colors">View All →</a>
+      </div>
+      <div class="grid grid-cols-3 gap-6 md:gap-10 text-center">
+        {STAFF.map((s) => {
+          const img = getStaffImage(s.id);
+          return (
+            <div>
+              {img ? (
+                <img
+                  src={img.src}
+                  alt={s.name}
+                  width={img.width}
+                  height={img.height}
+                  class="w-28 h-28 md:w-40 md:h-40 mx-auto rounded-full object-cover mb-4"
+                />
+              ) : (
+                <div class="w-28 h-28 md:w-40 md:h-40 mx-auto rounded-full bg-accent/50 mb-4" />
+              )}
+              <p class="font-medium text-base md:text-lg">{s.name}</p>
+              <p class="text-xs md:text-sm text-text-light mt-1">得意：{s.specialty}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Review -->
+  <section class="py-16 px-4 bg-bg-section">
+    <div class="max-w-4xl mx-auto reveal">
+      <h2 class="text-2xl font-display tracking-wider mb-8">REVIEW</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {latestReviews.map((review) => (
+          <div class="bg-white rounded-lg p-6">
+            <div class="flex gap-1 text-primary mb-2 tracking-wider text-sm">{stars(review.rating)}</div>
+            <p class="text-sm text-text-light leading-relaxed">{review.comment}</p>
+            <p class="text-xs text-text-light mt-4">
+              {review.author} ／ {review.age} ／ {review.job}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/review" class="inline-block bg-white border border-primary text-primary px-6 py-2.5 rounded text-sm tracking-wide hover:bg-primary hover:text-white transition-colors">もっと見る →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reservation Preview -->
+  <section class="py-16 md:py-20 px-4">
+    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center reveal">
+      <div class="overflow-hidden rounded-lg order-2 md:order-1">
+        <img
+          src={interior.src}
+          alt="サロン内観"
+          width={interior.width}
+          height={interior.height}
+          class="w-full h-64 md:h-80 object-cover transition-transform duration-500 ease-out hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+      <div class="order-1 md:order-2 text-center md:text-left">
+        <h2 class="text-2xl md:text-3xl font-display tracking-wider mb-3">RESERVATION</h2>
+        <p class="text-sm md:text-base text-text-light leading-relaxed mb-3">
+          ご予約はこちらから。<br class="md:hidden" />
+          メニュー・日時・スタッフを選んでオンラインで予約できます。
+        </p>
+        <p class="text-xs text-text-light tracking-wide mb-8">
+          営業 9:00–19:00（最終受付 18:00）／定休日：火曜
+        </p>
+        <a
+          href="/reservation"
+          class="group inline-flex items-center justify-center gap-3 bg-primary text-white px-10 py-4 rounded text-sm md:text-base tracking-wider hover:bg-primary-dark transition-all duration-300 hover:gap-4"
+        >
+          ご予約はこちら
+          <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Access -->
+  <section class="py-16 px-4 bg-text text-white">
+    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-10 reveal">
+      <div>
+        <h2 class="text-2xl font-display tracking-wider mb-6">ACCESS</h2>
+        <p class="text-sm leading-relaxed text-gray-300">
+          {SALON_ACCESS.postalCode}<br />
+          {SALON_ACCESS.addressLines[0]}<br />
+          {SALON_ACCESS.addressLines[1]}<br />
+          TEL：{SALON_ACCESS.phone}<br /><br />
+          営業時間：{SALON_ACCESS.openHours}<br />
+          定休日：{SALON_ACCESS.closedDay}
+        </p>
+        <a href="/access" class="inline-block mt-6 border border-white/40 text-white px-5 py-2 rounded text-sm tracking-wide hover:bg-white hover:text-text transition-colors">
+          詳細・地図を見る →
+        </a>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold mb-4">LINE公式アカウント</h3>
+        <p class="text-sm text-gray-300 mb-4">お得なクーポンやキャンペーン情報をお届けします。</p>
+        <a href="#" class="inline-block bg-[#06c755] text-white px-6 py-3 rounded text-sm hover:opacity-90 transition-opacity">
+          友だち追加する
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Layout>

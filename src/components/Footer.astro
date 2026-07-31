@@ -1,0 +1,46 @@
+---
+import logoWhite from '../assets/logo-white.png';
+import iconInstagram from '../assets/sns/socialicons-instagram.svg';
+import iconX from '../assets/sns/socialicons-x.svg';
+import { NAV_ITEMS } from '../lib/nav';
+
+const snsLinks = [
+  { label: 'Instagram', href: '#', icon: iconInstagram },
+  { label: 'X', href: '#', icon: iconX },
+];
+---
+
+<footer class="bg-text text-white py-10">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <a href="/" class="flex items-center shrink-0">
+        <img
+          src={logoWhite.src}
+          alt="étoile NAIL SALON"
+          width={logoWhite.width}
+          height={logoWhite.height}
+          class="h-14 w-auto md:h-16"
+        />
+      </a>
+      <nav class="flex flex-wrap justify-center gap-6">
+        {NAV_ITEMS.map((item) => (
+          <a href={item.href} class="text-xs tracking-wide text-gray-300 hover:text-white transition-colors">
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      <div class="flex gap-4 items-center">
+        {snsLinks.map((sns) => (
+          <a href={sns.href} aria-label={sns.label} class="opacity-80 hover:opacity-100 transition-opacity">
+            <img
+              src={typeof sns.icon === 'string' ? sns.icon : sns.icon.src}
+              alt=""
+              class="w-6 h-6"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+    <p class="text-center text-xs text-gray-500 mt-8">© étoile Nail Salon. All Rights Reserved.</p>
+  </div>
+</footer>

@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { STAFF } from '../lib/salon';
+import { getStaffImage } from '../lib/staffAssets';
+---
+
+<Layout title="スタッフ | étoile Nail Salon">
+  <Header slot="header" />
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="reveal text-3xl font-display tracking-wider text-center mb-12">STAFF</h1>
+      <div class="space-y-12 md:space-y-16">
+        {STAFF.map((s) => {
+          const img = getStaffImage(s.id);
+          return (
+            <article class="reveal flex flex-col sm:flex-row gap-6 sm:gap-10 items-center sm:items-start border-b border-accent pb-12 md:pb-16 last:border-b-0 last:pb-0">
+              {img ? (
+                <img
+                  src={img.src}
+                  alt={s.name}
+                  width={img.width}
+                  height={img.height}
+                  class="w-36 h-36 md:w-44 md:h-44 shrink-0 rounded-lg object-cover transition-transform duration-500 ease-out hover:scale-105"
+                />
+              ) : (
+                <div class="w-36 h-36 md:w-44 md:h-44 shrink-0 rounded-lg bg-accent/50" />
+              )}
+              <div class="text-center sm:text-left pt-1">
+                <h2 class="text-xl md:text-2xl font-medium tracking-wide">{s.name}</h2>
+                <p class="text-sm text-primary mt-2">得意なデザイン：{s.specialty}</p>
+                <p class="text-sm text-text-light leading-relaxed mt-4">{s.comment}</p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</Layout>

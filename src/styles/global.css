@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #c4a882;
+  --color-primary-light: #d4c0a8;
+  --color-primary-dark: #a8896a;
+  --color-accent: #e8d5c0;
+  --color-bg: #faf8f5;
+  --color-bg-section: #f5f0eb;
+  --color-text: #3d3d3d;
+  --color-text-light: #6b6b6b;
+  --color-white: #ffffff;
+
+  --font-sans: "Futura", "Jost", "Noto Sans JP", sans-serif;
+  --font-display: "Cormorant Garamond", "Noto Serif JP", serif;
+}
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}

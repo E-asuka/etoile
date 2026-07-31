@@ -1,0 +1,160 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import type { ImageMetadata } from 'astro';
+
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/gallery/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+
+const images = Object.entries(galleryModules)
+  .map(([path, mod]) => ({
+    src: mod.default,
+    name: path.split('/').pop() ?? path,
+  }))
+  .sort((a, b) =>
+    b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }),
+  );
+---
+
+<Layout title="ギャラリー | étoile Nail Salon">
+  <Header slot="header" />
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-5xl mx-auto reveal">
+      <h1 class="text-3xl font-display tracking-wider text-center mb-12">GALLERY</h1>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4" id="gallery-grid">
+        {images.map((img, i) => (
+          <button
+            type="button"
+            class="gallery-thumb aspect-square overflow-hidden rounded-lg bg-accent/30 block w-full p-0 border-0 cursor-pointer"
+            data-index={i}
+            aria-label={`画像 ${i + 1} を拡大表示`}
+          >
+            <img
+              src={img.src.src}
+              alt={`Nail design ${i + 1}`}
+              width={img.src.width}
+              height={img.src.height}
+              loading="lazy"
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105 pointer-events-none"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div
+    id="gallery-modal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center p-4 md:p-8"
+    role="dialog"
+    aria-modal="true"
+    aria-label="ギャラリー拡大表示"
+    aria-hidden="true"
+  >
+    <div class="absolute inset-0 bg-text/70 backdrop-blur-sm" data-close></div>
+
+    <button
+      type="button"
+      class="absolute top-4 right-4 z-10 w-11 h-11 rounded-full bg-white/90 text-text text-2xl leading-none hover:bg-white transition-colors"
+      data-close
+      aria-label="閉じる"
+    >
+      &times;
+    </button>
+
+    <button
+      type="button"
+      class="absolute left-2 md:left-6 z-10 w-11 h-11 rounded-full bg-white/90 text-text text-xl hover:bg-white transition-colors disabled:opacity-30"
+      id="gallery-prev"
+      aria-label="前の画像"
+    >
+      &lsaquo;
+    </button>
+
+    <button
+      type="button"
+      class="absolute right-2 md:right-6 z-10 w-11 h-11 rounded-full bg-white/90 text-text text-xl hover:bg-white transition-colors disabled:opacity-30"
+      id="gallery-next"
+      aria-label="次の画像"
+    >
+      &rsaquo;
+    </button>
+
+    <div class="relative z-[1] max-w-5xl w-full max-h-[85vh] flex flex-col items-center gap-3">
+      <img
+        id="gallery-modal-img"
+        src=""
+        alt=""
+        class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
+      />
+      <p id="gallery-modal-caption" class="text-sm text-white/90 tracking-wide"></p>
+    </div>
+  </div>
+
+  <Footer slot="footer" />
+</Layout>
+
+<script define:vars={{ images: images.map((img, i) => ({ src: img.src.src, alt: `Nail design ${i + 1}` })) }}>
+  const modal = document.getElementById('gallery-modal');
+  const modalImg = document.getElementById('gallery-modal-img');
+  const caption = document.getElementById('gallery-modal-caption');
+  const prevBtn = document.getElementById('gallery-prev');
+  const nextBtn = document.getElementById('gallery-next');
+  const thumbs = document.querySelectorAll('.gallery-thumb');
+
+  if (!modal || !modalImg || !caption || !prevBtn || !nextBtn || !images.length) {
+    // no-op
+  } else {
+    let index = 0;
+
+    const show = (i) => {
+      index = (i + images.length) % images.length;
+      const item = images[index];
+      modalImg.src = item.src;
+      modalImg.alt = item.alt;
+      caption.textContent = `${index + 1} / ${images.length}`;
+      prevBtn.disabled = images.length <= 1;
+      nextBtn.disabled = images.length <= 1;
+    };
+
+    const open = (i) => {
+      show(i);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const close = () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      modalImg.removeAttribute('src');
+    };
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        const i = Number(thumb.getAttribute('data-index') || '0');
+        open(i);
+      });
+    });
+
+    modal.querySelectorAll('[data-close]').forEach((el) => {
+      el.addEventListener('click', close);
+    });
+
+    prevBtn.addEventListener('click', () => show(index - 1));
+    nextBtn.addEventListener('click', () => show(index + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (modal.classList.contains('hidden')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+  }
+</script>

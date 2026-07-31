@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { MENUS, OPTIONS } from '../lib/salon';
+---
+
+<Layout title="メニュー | étoile Nail Salon">
+  <Header slot="header" />
+  <section class="pt-28 md:pt-32 pb-24 md:pb-32 px-4">
+    <div class="max-w-3xl mx-auto reveal">
+      <h1 class="text-3xl font-display tracking-wider text-center mb-12">MENU</h1>
+
+      <div class="space-y-4 mb-14">
+        {MENUS.map((item) => (
+          <div class="flex items-start justify-between border-b border-accent pb-4 gap-4">
+            <div>
+              <p class="font-medium text-sm">{item.label}</p>
+              <p class="text-xs text-text-light mt-1">所要時間 約{item.durationMin}分</p>
+            </div>
+            <p class="text-sm whitespace-nowrap">&yen;{item.price.toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+
+      <h2 class="text-sm tracking-widest text-text-light mb-4">OPTION</h2>
+      <div class="space-y-4 mb-14">
+        {OPTIONS.map((item) => (
+          <div class="flex items-start justify-between border-b border-accent pb-4 gap-4">
+            <div>
+              <p class="font-medium text-sm">{item.label}</p>
+              <p class="text-xs text-text-light mt-1">+{item.durationMin}分</p>
+            </div>
+            <p class="text-sm whitespace-nowrap">+&yen;{item.price.toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center">
+        <a
+          href="/reservation"
+          class="inline-block bg-primary text-white px-8 py-3 rounded hover:bg-primary-dark transition-colors text-sm"
+        >
+          ご予約はこちら →
+        </a>
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</Layout>
