@@ -17,8 +17,8 @@ pnpm-debug.log*
 .env
 .env.production
 
-# reservation data
-data/
+# reservation / shift runtime data (repo root only)
+/data/
 
 # macOS-specific files
 .DS_Store
