@@ -33,13 +33,13 @@ const galleryPreview = Object.entries(galleryModules)
   <Header slot="header" />
 
   <!-- Hero -->
-  <section class="relative h-screen flex items-center pt-28 md:pt-32 overflow-hidden">
+  <section class="relative h-svh min-h-svh flex items-center justify-center md:justify-start overflow-hidden">
     <picture>
       <source media="(min-width: 768px)" srcset={bgPc.src} />
       <img
         src={bgMobile.src}
         alt=""
-        class="absolute inset-0 w-full h-full object-cover"
+        class="absolute inset-0 w-full h-full object-cover object-center"
       />
     </picture>
     <div class="absolute inset-0 bg-bg/55 md:bg-bg/30"></div>

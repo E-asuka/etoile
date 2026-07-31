@@ -4,8 +4,11 @@ import { NAV_ITEMS } from '../lib/nav';
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
-  <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-20 md:h-24">
-    <a href="/" class="flex items-center shrink-0">
+  <div class="relative max-w-6xl mx-auto px-4 flex items-center justify-between h-20 md:h-24">
+    <a
+      href="/"
+      class="flex items-center shrink-0 max-md:absolute max-md:left-1/2 max-md:-translate-x-1/2"
+    >
       <img
         src={logoColor.src}
         alt="étoile NAIL SALON"
@@ -15,7 +18,7 @@ import { NAV_ITEMS } from '../lib/nav';
       />
     </a>
 
-    <nav class="hidden md:flex items-center gap-7">
+    <nav class="hidden md:flex items-center gap-7 ml-auto">
       {NAV_ITEMS.map((item) => (
         <a href={item.href} class="text-base tracking-wider text-text hover:text-primary transition-colors">
           {item.label}
@@ -32,7 +35,7 @@ import { NAV_ITEMS } from '../lib/nav';
     <button
       type="button"
       id="menu-toggle"
-      class="md:hidden inline-flex flex-col justify-center items-center gap-1.5 w-11 h-11 rounded border border-transparent hover:border-primary/30 transition-colors"
+      class="md:hidden ml-auto inline-flex flex-col justify-center items-center gap-1.5 w-11 h-11 rounded border border-transparent hover:border-primary/30 transition-colors"
       aria-label="メニューを開く"
       aria-expanded="false"
       aria-controls="mobile-menu"
