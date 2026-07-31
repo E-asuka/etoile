@@ -1,5 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import ui from '../data/shift-ui';
+import {
+  delay,
+  demoShiftsForMonth,
+  saveDemoShift,
+  type DemoShift,
+} from '../lib/demoMock';
 
 interface StaffItem {
   id: string;
@@ -11,13 +17,6 @@ interface Props {
   staffImages: Record<string, string>;
   workBlocks: string[];
   closedDays: number[];
-}
-
-interface Shift {
-  id: string;
-  staff: string;
-  date: string;
-  slots: string[];
 }
 
 function todayLocal(): string {
@@ -40,23 +39,16 @@ export default function ShiftForm({ staffList, staffImages, workBlocks, closedDa
   const [viewMonth, setViewMonth] = useState(now.getMonth() + 1);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
-  const [monthShifts, setMonthShifts] = useState<Shift[]>([]);
+  const [monthShifts, setMonthShifts] = useState<DemoShift[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const loadMonth = () => {
+  const loadMonth = async () => {
     setLoading(true);
-    const params = new URLSearchParams({
-      year: String(viewYear),
-      month: String(viewMonth),
-      staff,
-    });
-    fetch(`/api/shifts?${params}`)
-      .then((r) => r.json())
-      .then((data) => setMonthShifts(data.shifts ?? []))
-      .catch(() => setMonthShifts([]))
-      .finally(() => setLoading(false));
+    await delay(80);
+    setMonthShifts(demoShiftsForMonth(viewYear, viewMonth, staff));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -104,18 +96,10 @@ export default function ShiftForm({ staffList, staffImages, workBlocks, closedDa
     setSaving(true);
     setMessage('');
     try {
-      const res = await fetch('/api/shifts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ staff, date: selectedDate, slots: selectedSlots }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessage(selectedSlots.length === 0 ? ui.savedOff : ui.saved);
-        loadMonth();
-      } else {
-        setMessage(data.error || ui.saveFail);
-      }
+      await delay(120);
+      saveDemoShift({ staff, date: selectedDate, slots: selectedSlots });
+      setMessage(selectedSlots.length === 0 ? ui.savedOff : ui.saved);
+      await loadMonth();
     } catch {
       setMessage(ui.network);
     } finally {
@@ -139,6 +123,9 @@ export default function ShiftForm({ staffList, staffImages, workBlocks, closedDa
 
   return (
     <div className="space-y-8">
+      <p className="text-center text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+        {ui.demoBanner}
+      </p>
       <div>
         <label className="block text-sm font-medium mb-2">{ui.staffLabel}</label>
         <div className="flex flex-wrap gap-3">

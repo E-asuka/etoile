@@ -1,27 +1,20 @@
 # étoile Nail Salon
 
-Astro 製のネイルサロン公式サイト（予約・シフト管理付き）。
+Astro 製ネイルサロンサイトのポートフォリオです。  
+予約・シフト UI はブラウザ内モックで動作し、サーバーには保存しません。
 
 ## Commands
 
 | Command | Action |
 | :------ | :----- |
 | `npm install` | 依存関係のインストール |
-| `npm run dev` | 開発サーバー起動 (`localhost:4321`) |
-| `npm run dev:bg` | バックグラウンドで開発サーバー起動 |
-| `npm run build` | 本番ビルド (`./dist/`) |
+| `npm run dev` | 開発サーバー起動 |
+| `npm run build` | 静的ビルド (`./dist/`) |
 | `npm run preview` | ビルド結果のプレビュー |
 
-## Structure
+## Cloudflare Pages
 
-```text
-src/
-  assets/       画像・ロゴ
-  components/   Header / Footer / 予約・シフトフォーム
-  data/         レビュー JSON・UI 文字列
-  layouts/      共通レイアウト
-  lib/          サロン・予約・シフトロジック
-  pages/        ページ・API
-data/           予約・シフトの実行時データ
-public/         favicon など静的ファイル
-```
+- Framework preset: Astro（または None）
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Node.js version: `22` 以上

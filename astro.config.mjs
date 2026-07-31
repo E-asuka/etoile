@@ -4,17 +4,14 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 
-import node from '@astrojs/node';
-
-// https://astro.build/config
+// Static portfolio site for Cloudflare Pages (reservation UI is client-side mock)
 export default defineConfig({
-  output: 'server',
+  output: 'static',
 
   vite: {
     plugins: [tailwindcss()],
     server: {
       watch: {
-        // Long Japanese Firefly filenames can throw EBUSY on Windows watchers
         ignored: ['**/Firefly_*', '**/src/assets/**/*.png.tmp'],
       },
     },
@@ -29,8 +26,4 @@ export default defineConfig({
   },
 
   integrations: [react()],
-
-  adapter: node({
-    mode: 'standalone',
-  }),
 });

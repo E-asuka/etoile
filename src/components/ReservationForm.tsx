@@ -1,5 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import ui from '../data/reservation-ui';
+import {
+  delay,
+  mockAvailableSlots,
+  mockMonthAvailability,
+  mockReservationId,
+  type DayAvailability,
+} from '../lib/demoMock';
 
 export interface MenuItem {
   id: string;
@@ -27,15 +34,6 @@ interface Props {
   staffImages: Record<string, string>;
   noPreference: string;
   maxAdvanceMonths: number;
-}
-
-type DayStatus = 'open' | 'few' | 'full' | 'closed' | 'past' | 'beyond';
-
-interface DayAvailability {
-  date: string;
-  status: DayStatus;
-  mark: string;
-  availableCount: number;
 }
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -141,44 +139,34 @@ export default function ReservationForm({
   useEffect(() => {
     if (step !== 2 || !menu) return;
     const fetchId = ++calendarFetchId.current;
-    const ac = new AbortController();
+    let cancelled = false;
     setLoadingCalendar(true);
-    const params = new URLSearchParams({
-      year: String(viewYear),
-      month: String(viewMonth),
-      staff,
-      menu,
+    delay(100).then(() => {
+      if (cancelled || fetchId !== calendarFetchId.current) return;
+      setMonthDays(
+        mockMonthAvailability(viewYear, viewMonth, totals.durationMin || 60, maxAdvanceMonths),
+      );
+      setLoadingCalendar(false);
     });
-    if (optionsKey) params.set('options', optionsKey);
-    fetch(`/api/calendar?${params}`, { signal: ac.signal })
-      .then((r) => r.json())
-      .then((data) => {
-        if (fetchId !== calendarFetchId.current) return;
-        setMonthDays(data.days ?? []);
-      })
-      .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        if (fetchId !== calendarFetchId.current) return;
-        setMonthDays([]);
-      })
-      .finally(() => {
-        if (fetchId === calendarFetchId.current) setLoadingCalendar(false);
-      });
-    return () => ac.abort();
-  }, [step, viewYear, viewMonth, staff, menu, optionsKey]);
+    return () => {
+      cancelled = true;
+    };
+  }, [step, viewYear, viewMonth, staff, menu, optionsKey, totals.durationMin, maxAdvanceMonths]);
 
   useEffect(() => {
     if (!date || !menu) return;
+    let cancelled = false;
     setLoadingSlots(true);
     setTime('');
-    const params = new URLSearchParams({ date, staff, menu });
-    if (optionsKey) params.set('options', optionsKey);
-    fetch(`/api/slots?${params}`)
-      .then((r) => r.json())
-      .then((data) => setAvailableSlots(data.slots ?? []))
-      .catch(() => setAvailableSlots([]))
-      .finally(() => setLoadingSlots(false));
-  }, [date, staff, menu, optionsKey]);
+    delay(80).then(() => {
+      if (cancelled) return;
+      setAvailableSlots(mockAvailableSlots(date, totals.durationMin || 60));
+      setLoadingSlots(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [date, staff, menu, optionsKey, totals.durationMin]);
 
   const displayMonthDays = useMemo(() => {
     const key = monthKey(viewYear, viewMonth);
@@ -234,27 +222,9 @@ export default function ReservationForm({
     setSubmitting(true);
     setError('');
     try {
-      const res = await fetch('/api/reservation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          menu,
-          staff,
-          date,
-          time,
-          options: selectedOptions,
-          customerName,
-          customerPhone,
-          customerEmail,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setConfirmedId(data.reservation.id);
-        setStep(5);
-      } else {
-        setError(data.error || ui.errReserve);
-      }
+      await delay(200);
+      setConfirmedId(mockReservationId());
+      setStep(5);
     } catch {
       setError(ui.errNetwork);
     } finally {
@@ -276,6 +246,9 @@ export default function ReservationForm({
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-8">
+      <p className="mb-6 text-center text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+        {ui.demoBanner}
+      </p>
       {step <= 4 && (
         <div className="flex items-center justify-center gap-4 mb-10">
           {[1, 2, 3, 4].map((s) => (
@@ -694,6 +667,7 @@ export default function ReservationForm({
           </p>
           <p className="text-sm text-primary">{ui.idNote}</p>
           <p className="text-sm text-gray-500">{ui.emailSent}</p>
+          <p className="text-xs text-amber-800">{ui.demoThanks}</p>
           <p className="text-sm text-gray-500">
             {date} {time}~{endTime(time, totals.durationMin)} / {menuLabel}
             {totals.optionLabels.length ? ` (${totals.optionLabels.join(' / ')})` : ''} /{' '}
